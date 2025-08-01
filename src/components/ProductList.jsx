@@ -1,114 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import Card from './Card';
-import '../components/ProductList.css';
+import './ProductList.css';
 
+// Componente ProductList que muestra la lista de productos y permite agregarlos al carrito
 const ProductList = () => {
+  // Estado para los productos
   const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  // Estado para el carrito, inicializado desde localStorage si existe
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Cargar productos desde la API al montar el componente
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
       .then((res) => res.json())
-      .then((data) => {
-        setProductos(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error al cargar productos:', error);
-        setLoading(false);
-      });
+      .then((data) => setProductos(data));
   }, []);
 
+  // Guardar carrito en localStorage cuando cambia
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const filteredProducts = productos.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase())
-  );
-
+  // Agregar producto al carrito solo si no existe ya
   const addToCart = (producto) => {
-    setCart((prevCart) => {
-      const exists = prevCart.find((item) => item.id === producto.id);
-      if (exists) {
-        return prevCart.map((item) =>
-          item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
-      } else {
-        return [...prevCart, { ...producto, cantidad: 1 }];
-      }
-    });
-  };
-
-  const totalItems = cart.reduce((acc, item) => acc + item.cantidad, 0);
-
-  const resetCart = () => {
-    setCart([]);
-    localStorage.removeItem('cart');
+    // Si ya está en el carrito, no lo volvemos a agregar
+    const exists = cart.find((item) => item.id === producto.id);
+    if (!exists) {
+      setCart([...cart, producto]);
+    }
   };
 
   return (
     <div className="product-list">
       <h2>Lista de Productos</h2>
-
-      <div className="cart-summary">
-        <strong>🛒 Carrito:</strong> {totalItems} producto(s)
-        <button className="reset-btn" onClick={resetCart}>
-          Vaciar carrito
-        </button>
-        {cart.length > 0 && (
-          <ul>
-            {cart.map((item) => (
-              <li key={item.id}>
-                {item.title} x {item.cantidad}
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="product-container">
+        {/* Mapea y muestra cada producto */}
+        {productos.map((p) => (
+          <div className="product-card" key={p.id}>
+            <Card
+              id={p.id}
+              nombre={p.title}
+              precio={p.price}
+              descripcion={p.description}
+              imagen={p.image}
+            />
+            {/* Botón para agregar producto al carrito */}
+            <button className="add-btn" onClick={() => addToCart(p)}>
+              Agregar al carrito
+            </button>
+          </div>
+        ))}
       </div>
-
-      <input
-        type="text"
-        placeholder="Buscar productos..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="search-input"
-      />
-
-      {loading ? (
-        <p>Cargando productos...</p>
-      ) : (
-        <div className="product-container">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((p) => (
-              <div className="product-card" key={p.id}>
-                <Card
-                  id={p.id}
-                  nombre={p.title}
-                  precio={p.price}
-                  descripcion={p.description}
-                  imagen={p.image}
-                />
-                <button
-                  className="add-btn"
-                  onClick={() => addToCart(p)}
-                >
-                  Agregar al carrito
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No se encontraron productos.</p>
-          )}
-        </div>
-      )}
     </div>
   );
 };

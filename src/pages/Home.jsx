@@ -1,9 +1,10 @@
 import React from 'react';
+import './Home.css';
 
 const Home = () => {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Bienvenido a la Tienda</h1>
+    <div className="home">
+      <h1>Bienvenido a la tienda</h1>
       <p>Visita la sección de productos para ver lo que ofrecemos.</p>
     </div>
   );

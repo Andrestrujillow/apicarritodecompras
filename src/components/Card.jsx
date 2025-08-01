@@ -1,20 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import '../components/Card.css'; // Assuming you have a CSS file for styling the card
+import './Card.css';
 
-const Card = ({ id, nombre, precio, descripcion, imagen }) => {
+// Componente Card que muestra la información de un producto
+const Card = ({ nombre, precio, descripcion, imagen }) => {
   return (
     <div className="card">
-      <Link to={`/productos/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <img src={imagen} alt={nombre} style={{ width: '100%', borderRadius: '8px' }} />
-        <h3>{nombre}</h3>
-        <p>Precio: ${precio}</p>
-        <p>{descripcion.substring(0, 60)}...</p>
-      </Link>
+      {/* Imagen del producto */}
+      <img src={imagen} alt={nombre} />
+      {/* Nombre del producto */}
+      <h3>{nombre}</h3>
+      {/* Precio del producto */}
+      <p>${precio}</p>
+      {/* Descripción corta del producto */}
+      <p>{descripcion.substring(0, 50)}...</p>
     </div>
   );
 };
-
-
 
 export default Card;

@@ -1,0 +1,9 @@
+.cart-page {
+  text-align: center;
+  padding: 20px;
+}
+
+.cart-page ul {
+  list-style: none;
+  padding: 0;
+}
